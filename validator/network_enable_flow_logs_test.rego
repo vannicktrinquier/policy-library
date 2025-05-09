@@ -22,7 +22,7 @@ resources_in_violation[resource] {
 	asset := data.test.fixtures.network_enable_flow_logs.assets[_]
 	constraint := data.test.fixtures.network_enable_flow_logs.constraints
 	issues := deny with input.asset as asset
-		 with input.constraint as constraint
+		with input.constraint as constraint
 
 	resource := issues[_].details.resource
 }

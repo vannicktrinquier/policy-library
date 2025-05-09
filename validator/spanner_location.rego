@@ -51,7 +51,7 @@ location_is_valid(asset, locations) {
 	# ensure we have a data object
 	resource := asset.resource.data
 
-	# Retrieve the location 
+	# Retrieve the location
 	instance_config_parts := split(resource.config, "/")
 	resource_location := instance_config_parts[3]
 

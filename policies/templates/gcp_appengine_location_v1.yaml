@@ -91,7 +91,7 @@ spec:
         	# ensure we have a data object
         	resource := asset.resource.data
         
-        	# Retrieve the location 
+        	# Retrieve the location
         	resource_location := resource.locationId
         
         	# iterate through the locations

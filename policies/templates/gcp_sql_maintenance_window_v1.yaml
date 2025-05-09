@@ -40,7 +40,7 @@ spec:
     validation.gcp.forsetisecurity.org:
       rego: | #INLINE("validator/sql_maintenance_window.rego")
         #
-        # Copyright 2019 Google LLC 
+        # Copyright 2019 Google LLC
         #
         # Licensed under the Apache License, Version 2.0 (the "License");
         # you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ spec:
         # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         # See the License for the specific language governing permissions and
         # limitations under the License.
-        # 
+        #
         
         package templates.gcp.GCPSQLMaintenanceWindowConstraintV1
         

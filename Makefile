@@ -82,7 +82,7 @@ build_templates: ## Inline Rego rules into constraint templates
 
 .PHONY: format
 format: ## Format Rego rules
-	@opa fmt -w lib/ validator/
+	@opa fmt -w lib/ validator/ --v0-compatible
 
 .PHONY: build
 build: format build_templates ## Format and build

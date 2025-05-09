@@ -33,7 +33,7 @@ deny[{
 
 	# The rotation period for a key may be "never".  This results
 	# in the rotationPeriod attribute to be omitted from response
-	# from the CAI.  The default is 99999999s.  This is 
+	# from the CAI.  The default is 99999999s.  This is
 	# sufficiently high enough to cause fail
 	rotation_period_string := lib.get_default(asset.resource.data, "rotationPeriod", "99999999s")
 	rotation_period := time.parse_duration_ns(rotation_period_string)

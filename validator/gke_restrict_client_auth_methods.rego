@@ -39,8 +39,8 @@ deny[{
 # Rule Utilities
 ###########################
 check_all_disabled(master_auth, cluster_version) {
-	# For clusters before v1.12, if masterAuth is unspecified, username will 
-	# be set to "admin", a random password will be generated, and a client certificate 
+	# For clusters before v1.12, if masterAuth is unspecified, username will
+	# be set to "admin", a random password will be generated, and a client certificate
 	# will be issued.
 	re_match("1\\.(1)?[012]\\.", cluster_version)
 	master_auth != {}
@@ -50,7 +50,7 @@ check_all_disabled(master_auth, cluster_version) {
 
 check_all_disabled(master_auth, cluster_version) {
 	# For clusters after v1.12, if masterAuth is unspecified, then we have safe defaults:
-	# no username auth, no client cert. 
+	# no username auth, no client cert.
 	not re_match("1\\.(1)?[012]\\.", cluster_version)
 	auth_with_client_cert_disabled(master_auth) == true
 	auth_with_static_password_disabled(master_auth) == true
@@ -64,7 +64,7 @@ auth_with_client_cert_disabled(master_auth) {
 }
 
 auth_with_static_password_disabled(master_auth) {
-	# Scan for masterAuth to make sure it’s specified and username to 
+	# Scan for masterAuth to make sure it’s specified and username to
 	# make sure it’s empty or unspecified.
 	user_name := lib.get_default(master_auth, "username", "")
 	user_name == ""
