@@ -15,7 +15,7 @@
 apiVersion: templates.gatekeeper.sh/v1alpha1
 kind: ConstraintTemplate
 metadata:
-  name: gcp-compute-disable-default-service-account-v1
+  name: gcp-compute-require-csek-encryption-v1
   annotations:
     # Example of tying a template to a CIS benchmark
     benchmark: CIS15_4.1
@@ -23,23 +23,18 @@ spec:
   crd:
     spec:
       names:
-        kind: GCPComputeDisableDefaultServiceAccountV1
+        kind: GCPComputeRequireCSEKEncryptionConstraintV1
       validation:
         openAPIV3Schema:
           properties:
             mode:
-              type: string
-              enum: [denylist, allowlist]
-            match_mode:
-              type: string
-              enum: [exact, regex]
             instances:
               type: array
               items:
                 type: string
   targets:
    validation.gcp.forsetisecurity.org:
-      rego: | #INLINE("validator/compute_disable_default_service_account.rego")
+      rego: | #INLINE("validator/compute_csek.rego")
             #
             # Copyright 2025 Google LLC
             #
@@ -56,7 +51,7 @@ spec:
             # limitations under the License.
             #
             
-            package templates.gcp.GCPComputeDisableDefaultServiceAccountV1
+            package templates.gcp.GCPComputeRequireCSEKEncryptionConstraintV1
             
             import data.validator.gcp.lib as lib
             
@@ -73,58 +68,29 @@ spec:
             	asset.asset_type == "compute.googleapis.com/Instance"
             
             	instance := asset.resource.data
-            	service_account := lib.get_default(instance.serviceAccount[0], "email", "default")
-            	is_default_service_account(service_account)
+            	disks := lib.get_default(instance, "disk", [])
+            	disk := disks[_]
+            	not is_using_csek(disk)
             
             	# Check if instance is in denylist/allowlist
-            	match_mode := lib.get_default(params, "match_mode", "exact")
-            	mode := lib.get_default(params, "mode", "allowlist")
             	target_instances := lib.get_default(params, "instances", [])
-            	trace(sprintf("asset name:%v, target_instances: %v, mode: %v, match_mode: %v", [asset.name, target_instances, mode, match_mode]))
-            	instance_name_targeted(asset.name, target_instances, mode, match_mode)
+            	trace(sprintf("asset name:%v, target_instances: %v", [asset.name, target_instances]))
+            	instance_name_targeted(asset.name, target_instances)
             
-            	message := sprintf("%v is not allowed to use the default service account.", [asset.name])
+            	message := sprintf("%v is required  to use Customer Supplied Customer Key.", [asset.name])
             	metadata := {"resource": asset.name}
             }
             
-            is_default_service_account(service_account) {
-            	regex.match(`^[0-9]+-compute@developer\.gserviceaccount\.com$`, service_account)
-            }
-            
-            is_default_service_account(service_account) {
-            	service_account == "default"
+            is_using_csek(disk) {
+            	csek := lib.get_default(disk.diskEncryptionKey, "rawKey", "")
+            	csek != ""
             }
             
             ###########################
             # Rule Utilities
             ###########################
-            instance_name_targeted(asset_name, instance_filters, mode, match_mode) {
-            	mode == "allowlist"
-            	match_mode == "exact"
-            	matches := {asset_name} & cast_set(instance_filters)
-            	count(matches) == 0
-            }
-            
-            instance_name_targeted(asset_name, instance_filters, mode, match_mode) {
-            	mode == "denylist"
-            	match_mode == "exact"
+            instance_name_targeted(asset_name, instance_filters) {
             	matches := {asset_name} & cast_set(instance_filters)
             	count(matches) > 0
-            }
-            
-            instance_name_targeted(asset_name, instance_filters, mode, match_mode) {
-            	mode == "allowlist"
-            	match_mode == "regex"
-            	not re_match_name(asset_name, instance_filters)
-            }
-            
-            instance_name_targeted(asset_name, instance_filters, mode, match_mode) {
-            	mode == "denylist"
-            	match_mode == "regex"
-            	re_match_name(asset_name, instance_filters)
-            }
-            
-            re_match_name(name, filters) {
-            	re_match(filters[_], name)
             }
             #ENDINLINE

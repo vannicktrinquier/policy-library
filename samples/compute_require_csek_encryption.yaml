@@ -13,13 +13,17 @@
 # limitations under the License.
 #
 apiVersion: constraints.gatekeeper.sh/v1alpha1
-kind: GCPComputeDisableDefaultServiceAccountV1
+kind: GCPComputeRequireCSEKEncryptionConstraintV1
 metadata:
-  name: compute_disable_default_service_account
+  name: compute_require_csek_encryption
   annotations:
     # This constraint is not certified by CIS.
-    bundles.validator.forsetisecurity.org/cis-v1.5: 4.1
-    description: Checks if default service account is used for VM instances
+    bundles.validator.forsetisecurity.org/cis-v1.5: 4.7
+    description: Checks if critical VMs are encrypted with customer-supplied encryption keys (CSEK)
 spec:
   severity: high
-  parameters: {}
+  match:
+    ancestries: [ "organization/*" ]
+  parameters:
+    instances:
+    - //compute.googleapis.com/projects/test-project/zones/us-east1-c/instances/vm-require-csek
