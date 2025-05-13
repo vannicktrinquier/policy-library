@@ -27,7 +27,6 @@ spec:
       validation:
         openAPIV3Schema:
           properties:
-            mode:
             instances:
               type: array
               items:
@@ -68,8 +67,9 @@ spec:
             	asset.asset_type == "compute.googleapis.com/Instance"
             
             	instance := asset.resource.data
-            	disks := lib.get_default(instance, "disk", [])
+            	disks := lib.get_default(instance, "disks", [])
             	disk := disks[_]
+              not is_scratch_disk(disk)
             	not is_using_csek(disk)
             
             	# Check if instance is in denylist/allowlist
@@ -81,9 +81,13 @@ spec:
             	metadata := {"resource": asset.name}
             }
             
+            is_scratch_disk(disk) {
+              disk.type == "SCRATCH"
+            }
+
             is_using_csek(disk) {
             	csek := lib.get_default(disk.diskEncryptionKey, "rawKey", "")
-            	csek != ""
+            	csek
             }
             
             ###########################

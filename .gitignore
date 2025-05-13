@@ -8,3 +8,8 @@
 # MacOS
 .DS_Store
 node_modules/
+testing/.terraform/
+testing/.terraform.lock.hcl
+testing/test.tfplan
+testing/tfplan.json
+testing/cai_assets.json
