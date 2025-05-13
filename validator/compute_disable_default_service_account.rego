@@ -31,8 +31,7 @@ deny[{
 	asset.asset_type == "compute.googleapis.com/Instance"
 
 	instance := asset.resource.data
-	service_account := lib.get_default(instance.serviceAccount[0], "email", "default")
-	is_default_service_account(service_account)
+	is_default_service_account(instance)
 
 	# Check if instance is in denylist/allowlist
 	match_mode := lib.get_default(params, "match_mode", "exact")
@@ -45,12 +44,17 @@ deny[{
 	metadata := {"resource": asset.name}
 }
 
-is_default_service_account(service_account) {
-	regex.match(`^[0-9]+-compute@developer\.gserviceaccount\.com$`, service_account)
+is_default_service_account(instance) {
+	not instance.serviceAccounts
 }
 
-is_default_service_account(service_account) {
-	service_account == "default"
+is_default_service_account(instance) {
+	count(instance.serviceAccounts) == 0
+}
+
+is_default_service_account(instance) {
+	service_account := lib.get_default(instance.serviceAccounts[0], "email", "")
+	regex.match(`^[0-9]+-compute@developer\.gserviceaccount\.com$`, service_account)
 }
 
 ###########################

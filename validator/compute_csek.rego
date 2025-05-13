@@ -31,8 +31,9 @@ deny[{
 	asset.asset_type == "compute.googleapis.com/Instance"
 
 	instance := asset.resource.data
-	disks := lib.get_default(instance, "disk", [])
+	disks := lib.get_default(instance, "disks", [])
 	disk := disks[_]
+	not is_scratch_disk(disk)
 	not is_using_csek(disk)
 
 	# Check if instance is in denylist/allowlist
@@ -44,14 +45,18 @@ deny[{
 	metadata := {"resource": asset.name}
 }
 
-is_using_csek(disk) {
-	csek := lib.get_default(disk.diskEncryptionKey, "rawKey", "")
-	csek != ""
-}
-
 ###########################
 # Rule Utilities
 ###########################
+is_scratch_disk(disk) {
+	disk.type == "SCRATCH"
+}
+
+is_using_csek(disk) {
+	csek := lib.get_default(disk.diskEncryptionKey, "rawKey", "")
+	csek
+}
+
 instance_name_targeted(asset_name, instance_filters) {
 	matches := {asset_name} & cast_set(instance_filters)
 	count(matches) > 0

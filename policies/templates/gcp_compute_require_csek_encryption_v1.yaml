@@ -69,7 +69,7 @@ spec:
             	instance := asset.resource.data
             	disks := lib.get_default(instance, "disks", [])
             	disk := disks[_]
-              not is_scratch_disk(disk)
+            	not is_scratch_disk(disk)
             	not is_using_csek(disk)
             
             	# Check if instance is in denylist/allowlist
@@ -81,18 +81,18 @@ spec:
             	metadata := {"resource": asset.name}
             }
             
+            ###########################
+            # Rule Utilities
+            ###########################
             is_scratch_disk(disk) {
-              disk.type == "SCRATCH"
+            	disk.type == "SCRATCH"
             }
-
+            
             is_using_csek(disk) {
             	csek := lib.get_default(disk.diskEncryptionKey, "rawKey", "")
             	csek
             }
             
-            ###########################
-            # Rule Utilities
-            ###########################
             instance_name_targeted(asset_name, instance_filters) {
             	matches := {asset_name} & cast_set(instance_filters)
             	count(matches) > 0

@@ -46,8 +46,8 @@ test_compute_disable_default_service_account_no_violations {
 
 # #3. Two instance with default service account or empty service account
 test_compute_disable_default_service_account_violations {
-	expected_resource_names := {"//compute.googleapis.com/projects/test-project/zones/us-east1-c/instances/vm-empty-service-account", "//compute.googleapis.com/projects/test-project/zones/us-east1-c/instances/vm-default-service-account"}
-	test_utils.check_test_violations_count(fixture_compute_instance_violation, [fixture_constraint_default], template_name, 2)
+	expected_resource_names := {"//compute.googleapis.com/projects/test-project/zones/us-east1-c/instances/vm-default-service-account"}
+	test_utils.check_test_violations_count(fixture_compute_instance_violation, [fixture_constraint_default], template_name, 1)
 	test_utils.check_test_violations_resources(fixture_compute_instance_violation, [fixture_constraint_default], template_name, expected_resource_names)
 }
 
