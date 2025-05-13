@@ -31,7 +31,7 @@ REGO_IMAGE_TAG := latest
 .PHONY: test
 test: ## Test constraint templates via OPA
 	@echo "Running OPA tests..."
-	@opa test --timeout 30s -v lib/ validator/ --explain=notes
+	@opa test --timeout 30s -v lib/ validator/ --explain=notes --v0-compatible
 
 .PHONY: docker_test_opa_v15
 docker_test_opa_v15: ## Run tests using CV rego docker image v0.15.x
